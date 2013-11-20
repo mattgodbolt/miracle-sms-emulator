@@ -1,0 +1,3 @@
+[submodule "Miracle"]
+	path = Miracle
+	url = https://github.com/mattgodbolt/Miracle.git
