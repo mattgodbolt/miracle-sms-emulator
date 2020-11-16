@@ -1,3 +1,6 @@
 [submodule "Miracle"]
 	path = Miracle
 	url = https://github.com/mattgodbolt/Miracle.git
+[submodule "reveal.js"]
+	path = reveal.js
+	url = https://github.com/hakimel/reveal.js.git
