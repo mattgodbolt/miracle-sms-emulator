@@ -49,13 +49,23 @@
             border: none;
         }
 
+        .w20 {
+            width: 19% !important;
+            display: inline-block !important;
+        }
+
         .w30 {
-            width: 30% !important;
+            width: 29% !important;
             display: inline-block !important;
         }
 
         .w50 {
             width: 49% !important;
+            display: inline-block !important;
+        }
+
+        .w60 {
+            width: 59% !important;
             display: inline-block !important;
         }
     </style>
@@ -347,7 +357,7 @@ clock += 7;
             </section>
             <section>
                 <h3>Sprites</h3>
-                <div class="w50">
+                <div class="w20">
                     <table class="sprites">
                         <thead>
                         <tr>
@@ -358,61 +368,61 @@ clock += 7;
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
+                        <tr class="fragment highlight-current-red" data-fragment-index="1">
                             <td>0</td>
                             <td>116</td>
                             <td>111</td>
                             <td>16</td>
                         </tr>
-                        <tr>
+                        <tr class="fragment highlight-current-red" data-fragment-index="1">
                             <td>1</td>
                             <td>116</td>
                             <td>127</td>
                             <td>18</td>
                         </tr>
-                        <tr>
+                        <tr class="fragment highlight-current-red" data-fragment-index="1">
                             <td>2</td>
                             <td>124</td>
                             <td>111</td>
                             <td>20</td>
                         </tr>
-                        <tr>
+                        <tr class="fragment highlight-current-red" data-fragment-index="1">
                             <td>3</td>
                             <td>124</td>
                             <td>127</td>
                             <td>22</td>
                         </tr>
-                        <tr>
+                        <tr class="fragment highlight-current-red" data-fragment-index="1">
                             <td>4</td>
                             <td>132</td>
                             <td>111</td>
                             <td>24</td>
                         </tr>
-                        <tr>
+                        <tr class="fragment highlight-current-red" data-fragment-index="1">
                             <td>5</td>
                             <td>132</td>
                             <td>127</td>
                             <td>26</td>
                         </tr>
-                        <tr>
+                        <tr class="fragment highlight-current-red" data-fragment-index="2">
                             <td>6</td>
                             <td>211</td>
                             <td>111</td>
                             <td>102</td>
                         </tr>
-                        <tr>
+                        <tr class="fragment highlight-current-red" data-fragment-index="2">
                             <td>7</td>
                             <td>211</td>
                             <td>127</td>
                             <td>104</td>
                         </tr>
-                        <tr>
+                        <tr class="fragment highlight-current-red" data-fragment-index="2">
                             <td>8</td>
                             <td>219</td>
                             <td>111</td>
                             <td>106</td>
                         </tr>
-                        <tr>
+                        <tr class="fragment highlight-current-red" data-fragment-index="2">
                             <td>9</td>
                             <td>219</td>
                             <td>127</td>
@@ -421,7 +431,7 @@ clock += 7;
                         </tbody>
                     </table>
                 </div>
-                <div class="w50">
+                <div class="w20">
                     <table class="sprites">
                         <thead>
                         <tr>
@@ -432,22 +442,22 @@ clock += 7;
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
+                        <tr class="fragment highlight-current-red" data-fragment-index="3">
                             <td>10</td>
                             <td>147</td>
                             <td>35</td>
                             <td>44</td>
                         </tr>
-                        <tr>
+                        <tr class="fragment highlight-current-red" data-fragment-index="3">
                             <td>11</td>
                             <td>155</td>
                             <td>35</td>
                             <td>46</td>
                         </tr>
                         <tr>
-                            <td>12</td>
+                            <td class="fragment highlight-current-red" data-fragment-index="4">12</td>
                             <td>155</td>
-                            <td>208</td>
+                            <td class="fragment highlight-current-red" data-fragment-index="4">208</td>
                             <td>142</td>
                         </tr>
                         <tr>
@@ -492,7 +502,94 @@ clock += 7;
                         </tbody>
                     </table>
                 </div>
-                <img class="r-stretch" src="images/WonderBoy3WithSprites.png">
+                <div class="w60">
+                    <div class="r-stack">
+                        <img data-fragment-index="0" class="r-stretch fade-out" src="images/WonderBoy3WithSprites.png">
+                        <img data-fragment-index="1" class="r-stretch fragment current-visible"
+                             src="images/WonderBoy3WithSprites_wb.png">
+                        <img data-fragment-index="2" class="r-stretch fragment current-visible"
+                             src="images/WonderBoy3WithSprites_snek.png">
+                        <img data-fragment-index="3" class="r-stretch fragment current-visible"
+                             src="images/WonderBoy3WithSprites_coin.png">
+                    </div>
+                </div>
+            </section>
+            <section>
+                <h3>Sprites</h3>
+                <div class="w40">
+                    <ul>
+                        <li>"Collision" detection</li>
+                        <li>Transparency</li>
+                        <li>Limit of 8 sprites/line</li>
+                    </ul>
+                </div>
+                <div class="w60">
+                    <img src="images/AlteredBeastSMS_hl.png" class="r-stretch">
+                </div>
+                <span>TODO maybe more h/w oriented?</span>
+            </section>
+        </section>
+        <section data-background-image="images/sega-bg.png">
+            <section>
+                <h3>Sound</h3>
+                <img src="images/SN76489_08_block_diagram.png" class="r-stretch">
+            </section>
+            <section>
+                <h3>Sound</h3>
+                <ul>
+                    <li>4 channels:
+                        <ul>
+                            <li>3 square wave</li>
+                            <li>1 noise</li>
+                        </ul>
+                    </li>
+                    <li>One Z80 IO bus register:
+                        <ul>
+                            <li>
+                                <pre><code>1rr1dddd  ; volume</code></pre>
+                            </li>
+                            <li>
+                                <pre><code>1rr0hhhh  ; freq (high)</code></pre>
+                            </li>
+                            <li>
+                                <pre><code>0xllllll  ; freq (low)</code></pre>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+            <section>
+                <h3>Sound - Tone</h3>
+                <pre><code data-trim class="javascript">
+for (var i = 0; i < length; ++i) {
+  counter[chan] -= soundchipFreq / sampleRate;
+  if (counter[chan] < 0) {
+    counter[chan] += reg[chan];
+    out[chan] ^= 1;
+  }
+  result[i] += out[chan] ? 1 : -1 * vol[chan];
+}
+                </code></pre>
+            </section>
+            <section>
+                <h3>Sound - Noise</h3>
+                <pre><code data-trim class="javascript">
+let lfsr = 1 &lt;&lt; 15;
+
+function shiftLfsrWhiteNoise() {
+  const bit = (lfsr &amp; 1) ^ ((lfsr &amp; (1&lt;&lt;3)) >> 3);
+  lfsr = (lfsr >> 1) | (bit &lt;&lt; 15);
+  return lfsr & 1;
+}
+                </code></pre>
+            </section>
+
+        </section>
+        <section data-background-image="images/sega-bg.png">
+            <section>
+                <h3>Putting it all together</h3>
+                <img class="r-stretch" src="images/TeddyBoy.png">
+                <span>TODO demo?</span>
             </section>
         </section>
     </div>
