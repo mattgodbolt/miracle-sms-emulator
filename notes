@@ -1,0 +1,22 @@
+* more pics of cnosole and peripherals
+* set up a3020 emulator?
+* segue from backstory to "why javascript"
+* story of wife away!
+* then on to implementing
+  * maybe outline?
+* Memory map -- boring?
+  - at least drop the js?
+  - or do the write memory too?
+  - or switch with z80?
+* kill addresses on z80 example
+* z80 decode, 5b 19 d0 non prefixed example
+* executing consume prefix in example?
+* kill undoc opcodes?
+* ADD A, XX - tidy up
+* line numbers!!!!
+* HORIZONTOL!
+* Background higlight PNG
+* Sprites flow? like what the hardware does?
+* need demo
+* need conclusion
+
