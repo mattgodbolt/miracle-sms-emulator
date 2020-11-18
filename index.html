@@ -53,7 +53,8 @@
 
         table.sprites {
             text-align: center;
-            font-size: 50%;
+            font-size: 70%;
+            font-family: Courier, 'Courier New', monospace;
         }
 
         table.sprites td {
@@ -67,6 +68,11 @@
 
         .w30 {
             width: 29% !important;
+            display: inline-block !important;
+        }
+
+        .w40 {
+            width: 39% !important;
             display: inline-block !important;
         }
 
@@ -385,7 +391,7 @@ function readbyte(address) {
             </section>
             <section>
                 <h3>Sprites</h3>
-                <div class="w20">
+                <div class="w30">
                     <table class="sprites">
                         <thead>
                         <tr>
@@ -459,7 +465,7 @@ function readbyte(address) {
                         </tbody>
                     </table>
                 </div>
-                <div class="w20">
+                <div class="w30">
                     <table class="sprites">
                         <thead>
                         <tr>
@@ -530,7 +536,7 @@ function readbyte(address) {
                         </tbody>
                     </table>
                 </div>
-                <div class="w60">
+                <div class="w40">
                     <div class="r-stack">
                         <img data-fragment-index="0" class="r-stretch fade-out" src="images/WonderBoy3WithSprites.png">
                         <img data-fragment-index="1" class="r-stretch fragment current-visible"
