@@ -40,6 +40,17 @@
             height: 8em;
         }
 
+        section.stack {
+            background-image: url("images/background.png");
+            background-repeat: repeat;
+            box-shadow: 4px 4px #888;
+            border-radius: 4px;
+        }
+
+        .reveal .slide-number {
+            font-size: 1em;
+        }
+
         table.sprites {
             text-align: center;
             font-size: 50%;
@@ -76,25 +87,33 @@
         <section data-background-image="images/intro.png">
         </section>
         <section data-background-image="images/sega-bg.png">
-            <h2>Emulating a Sega Master System<br>in Javascript</h2>
-            <img src="images/MasterSystem.png">
-            <h5>Matt Godbolt<br><a href="https://twitter.com/mattgodbolt">@mattgodbolt</a></h5>
+            <section>
+                <h2>Emulating a Sega Master System<br>in Javascript</h2>
+                <img src="images/MasterSystem.png">
+                <h5>Matt Godbolt<br><a href="https://twitter.com/mattgodbolt">@mattgodbolt</a></h5>
+            </section>
         </section>
         <section data-background-image="images/sega-bg.png">
             <section>
                 <h3>What's a SMS?</h3>
-                <ul>
-                    <li>8-bit Z80</li>
-                    <li>8KB RAM</li>
-                    <li>Custom VDP
-                        <ul>
-                            <li>16KB RAM</li>
-                            <li>256 x 192, 64-colour</li>
-                        </ul>
-                    </li>
-                    <li>SN76489 Sound Chip</li>
-                    <li>32, 64, 128, 256KB ROMs</li>
-                </ul>
+                <div class="w50">
+                    <img src="images/MasterSystem.png">
+                    <img src="images/Cartridge.png">
+                </div>
+                <div class="w50">
+                    <ul>
+                        <li>8-bit Z80</li>
+                        <li>8KB RAM</li>
+                        <li>Custom VDP
+                            <ul>
+                                <li>16KB RAM</li>
+                                <li>256 x 192, 64-colour</li>
+                            </ul>
+                        </li>
+                        <li>SN76489 Sound Chip</li>
+                        <li>32, 64, 128, 256KB ROMs</li>
+                    </ul>
+                </div>
             </section>
             <section>
                 <h3>Why?</h3>
@@ -102,8 +121,8 @@
             <section>
                 <h3>Backstory</h3>
                 <div class="r-stack">
-                    <img width=1000 class="fade-out" src="images/AlteredBeastArcade.png">
-                    <img width=1000 class="fragment" src="images/AlteredBeastSMS.png">
+                    <img width=900 class="fade-out" src="images/AlteredBeastArcade.png">
+                    <img width=900 class="fragment" src="images/AlteredBeastSMS.png">
                 </div>
             </section>
             <section>
@@ -112,25 +131,6 @@
             </section>
         </section>
         <section data-background-image="images/sega-bg.png">
-            <section>
-                <h3>Memory Map</h3>
-                TODO
-            </section>
-            <section>Emulating Memory
-                <pre><code data-trim>
-function readbyte(address) {
-  if (address < 0x0400)
-    return romBanks[0][address];
-  if (address < 0x4000)
-    return romBanks[pages[0]][address];
-  if (address < 0x8000)
-    return romBanks[pages[1]][address - 0x4000];
-  if (address < 0xc000) {/*ROM page 2 / cartridge ram*/}
-  if (address < 0xe000) { return ram[address - 0xc000]; }
-  return ram[address - 0xe000];
-}
-            </code></pre>
-            </section>
             <section>
                 <h3>Emulating a Z80</h3>
                 <ul>
@@ -165,57 +165,54 @@ function readbyte(address) {
             </section>
             <section>
                 <h3>Z80 - Example</h3>
-                <pre class="w30"><code data-trim class="x86">
-058a 21 2a 06
-058d 87
-058e 5f
-058f 16 00
-0591 19
-0592 7e
-0593 23
-0594 66
-0595 6f
-0596 e9
-                </code></pre>
-                <pre class="w30"><code data-trim class="z80">
-LD HL,0x062a  ; HL = 0x062a
-ADD A,A       ; A = 2*A
-LD E,A
-LD D,0x00     ; DE = (u16)A
-ADD HL,DE     ; HL = HL + DE
-LD A,(HL)     ; A = *(u8*)HL;
-INC HL        ; HL++
-LD H,(HL)     ; A = *(u8*)HL;
-LD L,A        ; L = A
-JP HL         ; jump to HL
+                <pre><code data-trim data-line-numbers="" class="lang-avrasm">
+21 2a 06       LD HL,0x062a  ; HL = 0x062a
+87             ADD A,A       ; A = 2*A
+5f             LD E,A
+16 00          LD D,0x00     ; DE = (u16)A
+19             ADD HL,DE     ; HL = HL + DE
+7e             LD A,(HL)     ; A = *(u8*)HL;
+23             INC HL        ; HL++
+66             LD H,(HL)     ; A = *(u8*)HL;
+6f             LD L,A        ; L = A
+e9             JP HL         ; jump to HL
                 </code></pre>
             </section>
             <section>
                 <h3>Z80 - Decoding</h3>
                 <ul>
-                    <li>(Optional) prefix byte (<code>cb</code>, <code>dd</code>, <code>ed</code> or <code>fd</code>)
+                    <li>Optional prefix byte (<code>cb</code>, <code>dd</code>, <code>ed</code> or <code>fd</code>)
                     </li>
                     <li>One byte opcode</li>
                     <li>0, 1 or 2 operand bytes</li>
                 </ul>
-                <pre><code data-trim>
-XOR A, A          ; af
-LD A, 0xff        ; 3e ff
-LD B, (HL)        ; 46
-LD B, (IX + 0x0f) ; dd 46 0f
-LD DE, (0xd019)   ; ed 5b 19 d0
+                <pre><code data-trim data-line-numbers="" class="lang-avrasm">
+af             XOR A, A
+3e ff          LD A, 0xff
+
+46             LD B, (HL)
+dd 46 0f       LD B, (IX + 0x0f)
+
+5b             LD E, E
+ed 5b 19 d0    LD DE, (0xd019)
                 </code></pre>
             </section>
             <section>
                 <h3>Z80 - Executing</h3>
-                <pre><code data-trim>
-switch (readbyte(z80.pc++)) {
+                <pre><code data-trim data-line-numbers="">
+const opcode = readbyte(z80.pc++);
+switch (opcode) {
   case 0xaf: // XOR A, A
     z80.a ^= z80.a;
     break;
+
   case 0x3e: // LD A, constant
     z80.a = readbyte(z80.pc++);
     break;
+
+  case 0xdd:
+    return handle_prefix_dd();
+  // ... etc
                 </code></pre>
                 <div>… but not quite that easy</div>
             </section>
@@ -231,31 +228,29 @@ switch (readbyte(z80.pc++)) {
                     </li>
                     <li>IRQs</li>
                     <li>Input/output</li>
-                    <li>Undocumented opcodes</li>
                 </ul>
             </section>
             <section>
                 <h3>Z80 - Executing</h3>
-                <div>
-                    Borrow open source code
-                    <img class="r-stretch" src="images/Speccy.png">
-                </div>
+                <img class="r-stretch" src="images/Speccy.png">
             </section>
             <section>
                 <h3>ADD A, XX</h3>
-                <pre><code data-trim>
+                <pre><code class="lang-javascript" data-trim data-line-numbers="">
 const sz53_table = [...computed elsewhere...];
 const hc_add_table = [0, H, H, H, 0, 0, 0, H];
 const oflo_add_table = [0, 0, 0, V, V, 0, 0, 0];
-var c = readbyte(z80.pc++);
-var result = z80.a + c;
-var lookup = ((z80.a & 0x88) >> 3) | ((c & 0x88) >> 2)
-           | ((result & 0x88) >> 1);
-z80.a = result & 0xff;
+
+const c = readbyte(z80.pc++);
+const result = z80.a + c;
+const lookup = ((z80.a & 0x88) >> 3) | ((c & 0x88) >> 2) | ((result & 0x88) >> 1);
+
 z80.f = (result & 0x100 ? C : 0) // Carry
       | hc_add_table[lookup & 0x07] // 1/2 carry
       | oflo_add_table[lookup >> 4] // overflow
       | sz53_table[z80.a];  // sign, zero, “undef” bits
+
+z80.a = result & 0xff;
 clock += 7;
                 </code></pre>
             </section>
@@ -272,6 +267,25 @@ clock += 7;
                         </ul>
                     </li>
                 </ul>
+            </section>
+            <section>
+                <h3>Memory Map</h3>
+                TODO
+            </section>
+            <section>Emulating Memory
+                <pre><code data-trim data-line-numbers="">
+function readbyte(address) {
+  if (address < 0x0400)
+    return romBanks[0][address];
+  if (address < 0x4000)
+    return romBanks[pages[0]][address];
+  if (address < 0x8000)
+    return romBanks[pages[1]][address - 0x4000];
+  if (address < 0xc000) {/*ROM page 2 / cartridge ram*/}
+  if (address < 0xe000) { return ram[address - 0xc000]; }
+  return ram[address - 0xe000];
+}
+            </code></pre>
             </section>
         </section>
         <section data-background-image="images/sega-bg.png">
@@ -305,7 +319,7 @@ clock += 7;
                     <li>Two bytes/tile:
                         <ul>
                             <li>Tile index (9 bits)</li>
-                            <li>Horizontol, vertical flip (2 bits)</li>
+                            <li>Horizontal, vertical flip (2 bits)</li>
                             <li>Palette select (1 bit)</li>
                             <li>Sprite overwrite (1 bit)</li>
                             <li>3 "user" bits</li>
@@ -319,7 +333,7 @@ clock += 7;
             </section>
             <section>
                 <h3>Background</h3>
-                <div>
+                <div class="r-fit-text">
                     <code>
                     20<span class="fragment highlight-current-red" data-fragment-index="1">0212</span>202020202020202020202020202020<span
                             class="fragment highlight-current-red" data-fragment-index="2">0616</span>20202020<span
@@ -560,7 +574,7 @@ clock += 7;
             </section>
             <section>
                 <h3>Sound - Tone</h3>
-                <pre><code data-trim class="javascript">
+                <pre><code data-trim class="javascript" data-line-numbers="">
 for (var i = 0; i < length; ++i) {
   counter[chan] -= soundchipFreq / sampleRate;
   if (counter[chan] < 0) {
@@ -573,7 +587,7 @@ for (var i = 0; i < length; ++i) {
             </section>
             <section>
                 <h3>Sound - Noise</h3>
-                <pre><code data-trim class="javascript">
+                <pre><code data-trim class="javascript" data-line-numbers="">
 let lfsr = 1 &lt;&lt; 15;
 
 function shiftLfsrWhiteNoise() {
@@ -613,6 +627,7 @@ function shiftLfsrWhiteNoise() {
     Reveal.initialize({
         hash: true,
         slideNumber: true,
+        transition: 'fade',
         width: width,
         height: width / ratio,
 
