@@ -135,6 +135,7 @@
         .flex {
             display: flex;
             justify-content: space-evenly;
+            align-items: center;
         }
     </style>
 </head>
@@ -460,10 +461,6 @@ function writeByte(address, byte) {
                 <img class="r-stretch" src="images/WonderBoy3Tiles.png">
             </section>
             <section>
-                <h3>Tiles - Planar</h3>
-                TODO
-            </section>
-            <section>
                 <h3>Background</h3>
                 <ul>
                     <li>32 x 24 map of tiles</li>
@@ -536,176 +533,178 @@ function writeByte(address, byte) {
             </section>
             <section>
                 <h3>Sprites</h3>
-                <div class="w30">
-                    <table class="sprites">
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>x</th>
-                            <th>y</th>
-                            <th>t</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr class="fragment highlight-current-red" data-fragment-index="1">
-                            <td>0</td>
-                            <td>116</td>
-                            <td>111</td>
-                            <td>16</td>
-                        </tr>
-                        <tr class="fragment highlight-current-red" data-fragment-index="1">
-                            <td>1</td>
-                            <td>116</td>
-                            <td>127</td>
-                            <td>18</td>
-                        </tr>
-                        <tr class="fragment highlight-current-red" data-fragment-index="1">
-                            <td>2</td>
-                            <td>124</td>
-                            <td>111</td>
-                            <td>20</td>
-                        </tr>
-                        <tr class="fragment highlight-current-red" data-fragment-index="1">
-                            <td>3</td>
-                            <td>124</td>
-                            <td>127</td>
-                            <td>22</td>
-                        </tr>
-                        <tr class="fragment highlight-current-red" data-fragment-index="1">
-                            <td>4</td>
-                            <td>132</td>
-                            <td>111</td>
-                            <td>24</td>
-                        </tr>
-                        <tr class="fragment highlight-current-red" data-fragment-index="1">
-                            <td>5</td>
-                            <td>132</td>
-                            <td>127</td>
-                            <td>26</td>
-                        </tr>
-                        <tr class="fragment highlight-current-red" data-fragment-index="2">
-                            <td>6</td>
-                            <td>211</td>
-                            <td>111</td>
-                            <td>102</td>
-                        </tr>
-                        <tr class="fragment highlight-current-red" data-fragment-index="2">
-                            <td>7</td>
-                            <td>211</td>
-                            <td>127</td>
-                            <td>104</td>
-                        </tr>
-                        <tr class="fragment highlight-current-red" data-fragment-index="2">
-                            <td>8</td>
-                            <td>219</td>
-                            <td>111</td>
-                            <td>106</td>
-                        </tr>
-                        <tr class="fragment highlight-current-red" data-fragment-index="2">
-                            <td>9</td>
-                            <td>219</td>
-                            <td>127</td>
-                            <td>108</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="w30">
-                    <table class="sprites">
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>x</th>
-                            <th>y</th>
-                            <th>t</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr class="fragment highlight-current-red" data-fragment-index="3">
-                            <td>10</td>
-                            <td>147</td>
-                            <td>35</td>
-                            <td>44</td>
-                        </tr>
-                        <tr class="fragment highlight-current-red" data-fragment-index="3">
-                            <td>11</td>
-                            <td>155</td>
-                            <td>35</td>
-                            <td>46</td>
-                        </tr>
-                        <tr>
-                            <td class="fragment highlight-current-red" data-fragment-index="4">12</td>
-                            <td>155</td>
-                            <td class="fragment highlight-current-red" data-fragment-index="4">208</td>
-                            <td>142</td>
-                        </tr>
-                        <tr>
-                            <td>13</td>
-                            <td>155</td>
-                            <td>127</td>
-                            <td>144</td>
-                        </tr>
-                        <tr>
-                            <td>14</td>
-                            <td>219</td>
-                            <td>208</td>
-                            <td>116</td>
-                        </tr>
-                        <tr>
-                            <td>15</td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>16</td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td colspan="4">...</td>
-                        </tr>
-                        <tr>
-                            <td>62</td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>63</td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>0</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="w40">
-                    <div class="r-stack">
-                        <img data-fragment-index="0" class="r-stretch fade-out" src="images/WonderBoy3WithSprites.png">
-                        <img data-fragment-index="1" class="r-stretch fragment current-visible"
-                             src="images/WonderBoy3WithSprites_wb.png">
-                        <img data-fragment-index="2" class="r-stretch fragment current-visible"
-                             src="images/WonderBoy3WithSprites_snek.png">
-                        <img data-fragment-index="3" class="r-stretch fragment current-visible"
-                             src="images/WonderBoy3WithSprites_coin.png">
+                <div class="flex">
+                    <div>
+                        <table class="sprites">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>x</th>
+                                <th>y</th>
+                                <th>t</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="fragment highlight-current-red" data-fragment-index="1">
+                                <td>0</td>
+                                <td>116</td>
+                                <td>111</td>
+                                <td>16</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="1">
+                                <td>1</td>
+                                <td>116</td>
+                                <td>127</td>
+                                <td>18</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="1">
+                                <td>2</td>
+                                <td>124</td>
+                                <td>111</td>
+                                <td>20</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="1">
+                                <td>3</td>
+                                <td>124</td>
+                                <td>127</td>
+                                <td>22</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="1">
+                                <td>4</td>
+                                <td>132</td>
+                                <td>111</td>
+                                <td>24</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="1">
+                                <td>5</td>
+                                <td>132</td>
+                                <td>127</td>
+                                <td>26</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="2">
+                                <td>6</td>
+                                <td>211</td>
+                                <td>111</td>
+                                <td>102</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="2">
+                                <td>7</td>
+                                <td>211</td>
+                                <td>127</td>
+                                <td>104</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="2">
+                                <td>8</td>
+                                <td>219</td>
+                                <td>111</td>
+                                <td>106</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="2">
+                                <td>9</td>
+                                <td>219</td>
+                                <td>127</td>
+                                <td>108</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <table class="sprites">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>x</th>
+                                <th>y</th>
+                                <th>t</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="fragment highlight-current-red" data-fragment-index="3">
+                                <td>10</td>
+                                <td>147</td>
+                                <td>35</td>
+                                <td>44</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="3">
+                                <td>11</td>
+                                <td>155</td>
+                                <td>35</td>
+                                <td>46</td>
+                            </tr>
+                            <tr>
+                                <td class="fragment highlight-current-red" data-fragment-index="4">12</td>
+                                <td>155</td>
+                                <td class="fragment highlight-current-red" data-fragment-index="4">208</td>
+                                <td>142</td>
+                            </tr>
+                            <tr>
+                                <td>13</td>
+                                <td>155</td>
+                                <td>127</td>
+                                <td>144</td>
+                            </tr>
+                            <tr>
+                                <td>14</td>
+                                <td>219</td>
+                                <td>208</td>
+                                <td>116</td>
+                            </tr>
+                            <tr>
+                                <td>15</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>16</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">...</td>
+                            </tr>
+                            <tr>
+                                <td>62</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>63</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="w40">
+                        <div class="r-stack">
+                            <img data-fragment-index="0" class="r-stretch fade-out"
+                                 src="images/WonderBoy3WithSprites.png">
+                            <img data-fragment-index="1" class="r-stretch fragment current-visible"
+                                 src="images/WonderBoy3WithSprites_wb.png">
+                            <img data-fragment-index="2" class="r-stretch fragment current-visible"
+                                 src="images/WonderBoy3WithSprites_snek.png">
+                            <img data-fragment-index="3" class="r-stretch fragment current-visible"
+                                 src="images/WonderBoy3WithSprites_coin.png">
+                        </div>
                     </div>
                 </div>
             </section>
             <section>
                 <h3>Sprites</h3>
-                <div class="w40">
+                <div class="flex">
                     <ul>
                         <li>"Collision" detection</li>
                         <li>Transparency</li>
                         <li>Limit of 8 sprites/line</li>
                     </ul>
+                    <div class="w60">
+                        <img src="images/AlteredBeastSMS_hl.png" class="r-stretch">
+                    </div>
                 </div>
-                <div class="w60">
-                    <img src="images/AlteredBeastSMS_hl.png" class="r-stretch">
-                </div>
-                <span>TODO maybe more h/w oriented?</span>
             </section>
         </section>
         <section data-background-image="images/sega-bg.png">
@@ -768,7 +767,22 @@ function shiftLfsrWhiteNoise() {
             <section>
                 <h3>Putting it all together</h3>
                 <img class="r-stretch" src="images/TeddyBoy.png">
-                <span>TODO demo?</span>
+            </section>
+            <section>
+                <h3>Conclusion</h3>
+                <ul>
+                    <li>Time away from family can be constructive</li>
+                    <li>Reliving your childhood is fun</li>
+                    <li>Browsers are amazingly fast</li>
+                </ul>
+            </section>
+            <section>
+                <h3>More things</h3>
+                <ul>
+                    <li><a href="https://github.com/mattgodbolt/Miracle">github.com/mattgodbolt/Miracle</a></li>
+                    <li>Led to <a href="https://bbc.godbolt.org/">jsbeeb</a></li>
+                    <li>Please ask me questions!</li>
+                </ul>
             </section>
         </section>
     </div>
