@@ -61,6 +61,52 @@
             border: none;
         }
 
+        table.memory {
+            font-size: 70%;
+        }
+
+        table.registers {
+            font-size: 70%;
+        }
+
+        table.memory td {
+            vertical-align: middle;
+            border: none;
+        }
+
+        table.memory td:nth-child(2) {
+            border: 1px solid black;
+            margin: 2px;
+        }
+
+        table.memory tr:nth-child(odd) .rom {
+            background: #ff7474;
+        }
+
+        table.memory tr:nth-child(even) .rom {
+            background: #ba5858;
+        }
+
+        table.memory tr:nth-child(odd) .ram {
+            background: #82ff74;
+        }
+
+        table.memory tr:nth-child(even) .ram {
+            background: #54a74b;
+        }
+
+        table.memory .magic {
+            background: #b6b600;
+        }
+
+        .kb8 {
+            height: 2em;
+        }
+
+        .kb16 {
+            height: 3em;
+        }
+
         .w20 {
             width: 19% !important;
             display: inline-block !important;
@@ -85,6 +131,11 @@
             width: 59% !important;
             display: inline-block !important;
         }
+
+        .flex {
+            display: flex;
+            justify-content: space-evenly;
+        }
     </style>
 </head>
 <body>
@@ -102,23 +153,27 @@
         <section data-background-image="images/sega-bg.png">
             <section>
                 <h3>What's a SMS?</h3>
-                <div class="w50">
-                    <img src="images/MasterSystem.png">
-                    <img src="images/Cartridge.png">
-                </div>
-                <div class="w50">
-                    <ul>
-                        <li>8-bit Z80</li>
-                        <li>8KB RAM</li>
-                        <li>Custom VDP
-                            <ul>
-                                <li>16KB RAM</li>
-                                <li>256 x 192, 64-colour</li>
-                            </ul>
-                        </li>
-                        <li>SN76489 Sound Chip</li>
-                        <li>32, 64, 128, 256KB ROMs</li>
-                    </ul>
+                <div class="flex">
+                    <div>
+                        <img src="images/MasterSystem.png">
+                        <br>
+                        <img src="images/Cartridge.png">
+                    </div>
+                    <div>
+                        <ul>
+                            <li>1985 (JP); 1986 (US);1987 (EU)</li>
+                            <li>8-bit Z80</li>
+                            <li>8KB RAM</li>
+                            <li>Custom VDP
+                                <ul>
+                                    <li>16KB RAM</li>
+                                    <li>256 x 192, 64-colour</li>
+                                </ul>
+                            </li>
+                            <li>SN76489 Sound Chip</li>
+                            <li>32, 64, 128, 256KB ROMs</li>
+                        </ul>
+                    </div>
                 </div>
             </section>
             <section>
@@ -133,10 +188,24 @@
             </section>
             <section>
                 <h3>Backstory</h3>
+                <h5>2011, mother-in-law's 70th</h5>
+            </section>
+            <section>
+                <h3>Backstory</h3>
                 <img src="images/OGMiracle.png" class="r-stretch">
             </section>
         </section>
         <section data-background-image="images/sega-bg.png">
+            <section>
+                <h3>Emulating a computer</h3>
+                <ul>
+                    <li>Emulate the CPU</li>
+                    <li>Emulate the video</li>
+                    <li>Emulate the sound</li>
+                    <li>...</li>
+                    <li>Profit?</li>
+                </ul>
+            </section>
             <section>
                 <h3>Emulating a Z80</h3>
                 <ul>
@@ -276,11 +345,70 @@ clock += 7;
             </section>
             <section>
                 <h3>Memory Map</h3>
-                TODO
+                <div class="flex">
+                    <div>
+                        <table class="memory">
+                            <tbody>
+                            <tr>
+                                <td><code>fffc-ffff</code></td>
+                                <td class="magic">Paging registers</td>
+                            </tr>
+                            <tr class="kb8">
+                                <td><code>e000-fffb</code></td>
+                                <td class="ram">Mirror of 8KB RAM</td>
+                            </tr>
+                            <tr class="kb8">
+                                <td><code>c000-dfff</code></td>
+                                <td class="ram">8KB RAM</td>
+                            </tr>
+                            <tr class="kb16">
+                                <td><code>8000-bfff</code></td>
+                                <td class="rom">16KB ROM page 2<br>(or Cartridge RAM)</td>
+                            </tr>
+                            <tr class="kb16">
+                                <td><code>4000-7fff</code></td>
+                                <td class="rom">16KB ROM page 1</td>
+                            </tr>
+                            <tr class="kb16">
+                                <td><code>0400-3fff</code></td>
+                                <td class="rom">15KB ROM page 0</td>
+                            </tr>
+                            <tr>
+                                <td><code>0000-03ff</code></td>
+                                <td class="rom">1KB ROM bank 0</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <table class="fragment registers">
+                            <tr>
+                                <th><code>ffff</code></th>
+                                <td>Page 2 ROM</td>
+                            </tr>
+                            <tr>
+                                <th><code>fffe</code></th>
+                                <td>Page 1 ROM</td>
+                            </tr>
+                            <tr>
+                                <th><code>fffd</code></th>
+                                <td>Page 0 ROM</td>
+                            </tr>
+                            <tr>
+                                <th><code>fffc</code></th>
+                                <td>ROM/RAM select</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
             </section>
             <section>Emulating Memory
-                <pre><code data-trim data-line-numbers="">
-function readbyte(address) {
+                <pre><code data-trim class="lang-javascript" data-line-numbers="">
+const romBanks = [new Uint8Array(16384), ...];
+const pages = [0, 1, 2];
+const ram = new Uint8Array(8192);
+
+function readByte(address) {
   if (address < 0x0400)
     return romBanks[0][address];
   if (address < 0x4000)
@@ -288,8 +416,25 @@ function readbyte(address) {
   if (address < 0x8000)
     return romBanks[pages[1]][address - 0x4000];
   if (address < 0xc000) {/*ROM page 2 / cartridge ram*/}
-  if (address < 0xe000) { return ram[address - 0xc000]; }
+  if (address < 0xe000)
+    return ram[address - 0xc000];
   return ram[address - 0xe000];
+}
+            </code></pre>
+            </section>
+            <section>Emulating Memory
+                <pre><code data-trim class="lang-javascript" data-line-numbers="">
+function writeByte(address, byte) {
+  if (address < 0xc000)
+    return; // It's ROM!
+
+  if (address === 0xfffc)
+    /*handle rom/ram*/;
+  else if (address >= 0xfffd)
+    pages[address - 0xfffd] = byte;
+  else if (address < 0xe000)
+    ram[address - 0xc000] = byte;
+  else ram[address - 0xe000] = byte;
 }
             </code></pre>
             </section>
