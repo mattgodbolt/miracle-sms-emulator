@@ -73,14 +73,54 @@
             font-size: 70%;
         }
 
+        .reveal .slides section .fragment.highlight-current-cell {
+            opacity: 1;
+            visibility: inherit;
+        }
+
+        .reveal .slides section .fragment.highlight-current-cell.current-fragment {
+            font-weight: bolder;
+            color: #106184;
+        }
+
         table.memory td {
             vertical-align: middle;
             border: none;
         }
 
+        table.memory tr.tiny {
+            font-size: 65%;
+            text-align: right;
+        }
+
+        table.memory td {
+            text-align: right;
+        }
+
         table.memory td:nth-child(2) {
             border: 1px solid black;
             margin: 2px;
+        }
+
+        table.memory tr.all td:nth-child(2) {
+            border-width: 5px;
+        }
+
+        table.memory tr.top td:nth-child(2) {
+            border-top-width: 5px;
+            border-left-width: 5px;
+            border-right-width: 5px;
+        }
+
+        table.memory tr.mid td:nth-child(2) {
+            border-left-width: 5px;
+            border-right-width: 5px;
+        }
+
+        table.memory tr.bot td:nth-child(2) {
+            border-bottom-width: 5px;
+            border-left-width: 5px;
+            border-right-width: 5px;
         }
 
         table.memory tr:nth-child(odd) .rom {
@@ -104,11 +144,11 @@
         }
 
         .kb8 {
-            height: 2em;
+            height: 1.8em;
         }
 
         .kb16 {
-            height: 3em;
+            height: 3.2em;
         }
 
         .w20 {
@@ -367,31 +407,31 @@ function add_a_imm() {
                     <div>
                         <table class="memory">
                             <tbody>
-                            <tr>
+                            <tr class="tiny top fragment highlight-current-cell" data-fragment-index="5">
                                 <td><code>fffc-ffff</code></td>
                                 <td class="magic">Paging registers</td>
                             </tr>
-                            <tr class="kb8">
+                            <tr class="kb8 mid fragment highlight-current-cell" data-fragment-index="4">
                                 <td><code>e000-fffb</code></td>
                                 <td class="ram">Mirror of 8KB RAM</td>
                             </tr>
-                            <tr class="kb8">
+                            <tr class="kb8 bot fragment highlight-current-cell" data-fragment-index="4">
                                 <td><code>c000-dfff</code></td>
                                 <td class="ram">8KB RAM</td>
                             </tr>
-                            <tr class="kb16">
+                            <tr class="kb16 all fragment highlight-current-cell" data-fragment-index="3">
                                 <td><code>8000-bfff</code></td>
                                 <td class="rom">16KB ROM page 2<br>(or Cartridge RAM)</td>
                             </tr>
-                            <tr class="kb16">
+                            <tr class="kb16 all fragment highlight-current-cell" data-fragment-index="2">
                                 <td><code>4000-7fff</code></td>
                                 <td class="rom">16KB ROM page 1</td>
                             </tr>
-                            <tr class="kb16">
+                            <tr class="kb16 top fragment highlight-current-cell" data-fragment-index="1">
                                 <td><code>0400-3fff</code></td>
                                 <td class="rom">15KB ROM page 0</td>
                             </tr>
-                            <tr>
+                            <tr class="tiny bot fragment highlight-current-cell" data-fragment-index="1">
                                 <td><code>0000-03ff</code></td>
                                 <td class="rom">1KB ROM bank 0</td>
                             </tr>
