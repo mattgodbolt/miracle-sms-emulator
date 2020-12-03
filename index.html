@@ -14,6 +14,10 @@
     <link rel="stylesheet" href="reveal.js/plugin/highlight/monokai.css" id="highlight-theme">
 
     <style>
+        body.reveal-viewport {
+            background: darkslategray;
+        }
+
         div.footer.copy {
             z-index: 10;
             font-size: 70%;
@@ -187,16 +191,17 @@
 <body>
 <div class="reveal">
     <div class="slides">
-        <section data-background-image="images/intro.png">
-        </section>
-        <section data-background-image="images/sega-bg.png">
+        <section>
             <section>
                 <h2>Emulating a Sega Master System<br>in Javascript</h2>
                 <img src="images/MasterSystem.png">
                 <h5>Matt Godbolt<br><a href="https://twitter.com/mattgodbolt">@mattgodbolt</a></h5>
+                <div>
+                    Use cursor keys or space to navigate.
+                </div>
             </section>
         </section>
-        <section data-background-image="images/sega-bg.png">
+        <section>
             <section>
                 <h3>What's a SMS?</h3>
                 <div class="flex">
@@ -241,7 +246,7 @@
                 <h5>2011</h5>
             </section>
         </section>
-        <section data-background-image="images/sega-bg.png">
+        <section>
             <section>
                 <h3>Emulating a computer</h3>
                 <ul class="fragment">
@@ -495,7 +500,7 @@ function writeByte(address, byte) {
             </code></pre>
             </section>
         </section>
-        <section data-background-image="images/sega-bg.png">
+        <section>
             <section>
                 <h3>VDP</h3>
                 <img class="r-stretch" src="images/FantasyZone.png">
@@ -776,7 +781,7 @@ function writeByte(address, byte) {
                 </div>
             </section>
         </section>
-        <section data-background-image="images/sega-bg.png">
+        <section>
             <section>
                 <h3>Sound</h3>
                 <img src="images/SN76489_08_block_diagram.png" class="r-stretch">
@@ -826,10 +831,10 @@ function shiftLfsrWhiteNoise() {
             </section>
 
         </section>
-        <section data-background-image="images/sega-bg.png">
+        <section>
             <section>
                 <h3>Putting it all together</h3>
-                <a href="Miracle/miracle.html"><img class="r-stretch" src="images/TeddyBoy.png"></a>
+                <a href="https://xania.org/miracle/miracle.html"><img class="r-stretch" src="images/TeddyBoy.png"></a>
             </section>
             <section>
                 <h3>Conclusion</h3>
@@ -849,16 +854,12 @@ function shiftLfsrWhiteNoise() {
                     </li>
                     <li>Go buy LizardCube's Wonderboy III remake: <a href="https://www.thedragonstrap.com/">thedragonstrap.com</a>
                     </li>
-                    <li>Please ask me questions!</li>
                 </ul>
             </section>
         </section>
     </div>
     <div class="footer copy">
         &copy; <a href="https://twitter.com/mattgodbolt">Matt Godbolt</a> 2020
-    </div>
-    <div class="footer sdd">
-        <img src="images/sega-virtual.png" alt="sega-dev-days">
     </div>
 </div>
 
