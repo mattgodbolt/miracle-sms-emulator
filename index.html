@@ -1,0 +1,887 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Emulating a Sega Master System in Javascript</title>
+
+    <link rel="stylesheet" href="reveal.js/dist/reset.css">
+    <link rel="stylesheet" href="reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="reveal.js/dist/theme/simple.css">
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="reveal.js/plugin/highlight/monokai.css" id="highlight-theme">
+
+    <style>
+        body.reveal-viewport {
+            background: darkslategray;
+        }
+
+        div.footer.copy {
+            z-index: 10;
+            font-size: 70%;
+            font-style: italic;
+            position: absolute;
+            bottom: 1em;
+            text-align: center;
+            background: #ddd;
+            box-shadow: 4px 4px #888;
+            border-radius: 4px;
+            padding: 8px !important;
+            margin-left: 15px;
+        }
+
+        div.footer.sdd {
+            z-index: 10;
+            font-size: 70%;
+            font-style: italic;
+            position: absolute;
+            right: 1em;
+            bottom: 1em;
+            text-align: center;
+            margin-right: 15px;
+            height: 8em;
+        }
+
+        section.stack {
+            background-image: url("images/background.png");
+            background-repeat: repeat;
+            box-shadow: 4px 4px #888;
+            border-radius: 4px;
+        }
+
+        .reveal .slide-number {
+            font-size: 1em;
+        }
+
+        table.sprites {
+            text-align: center;
+            font-size: 70%;
+            font-family: Courier, 'Courier New', monospace;
+        }
+
+        pre.tile-map {
+            width: 39em;
+        }
+
+        table.sprites td {
+            border: none;
+        }
+
+        table.memory {
+            font-size: 70%;
+        }
+
+        table.registers {
+            font-size: 70%;
+        }
+
+        .reveal .slides section .fragment.highlight-current-cell {
+            opacity: 1;
+            visibility: inherit;
+        }
+
+        .reveal .slides section .fragment.highlight-current-cell.current-fragment {
+            font-weight: bolder;
+            color: #106184;
+            transform: scale(1.15);
+        }
+
+        table.memory td {
+            vertical-align: middle;
+            border: none;
+        }
+
+        table.memory tr.tiny {
+            font-size: 65%;
+            text-align: right;
+        }
+
+        table.memory td {
+            text-align: right;
+        }
+
+        table.memory td:nth-child(2) {
+            border: 1px solid black;
+            margin: 2px;
+        }
+
+        table.memory tr.all td:nth-child(2) {
+            border-width: 5px;
+        }
+
+        table.memory tr.top td:nth-child(2) {
+            border-top-width: 5px;
+            border-left-width: 5px;
+            border-right-width: 5px;
+        }
+
+        table.memory tr.mid td:nth-child(2) {
+            border-left-width: 5px;
+            border-right-width: 5px;
+        }
+
+        table.memory tr.bot td:nth-child(2) {
+            border-bottom-width: 5px;
+            border-left-width: 5px;
+            border-right-width: 5px;
+        }
+
+        table.memory tr:nth-child(odd) .rom {
+            background: #ff7474;
+        }
+
+        table.memory tr:nth-child(even) .rom {
+            background: #ba5858;
+        }
+
+        table.memory tr:nth-child(odd) .ram {
+            background: #82ff74;
+        }
+
+        table.memory tr:nth-child(even) .ram {
+            background: #54a74b;
+        }
+
+        table.memory .magic {
+            background: #b6b600;
+        }
+
+        .kb8 {
+            height: 1.8em;
+        }
+
+        .kb16 {
+            height: 3.2em;
+        }
+
+        .w20 {
+            width: 19% !important;
+            display: inline-block !important;
+        }
+
+        .w30 {
+            width: 29% !important;
+            display: inline-block !important;
+        }
+
+        .w40 {
+            width: 39% !important;
+            display: inline-block !important;
+        }
+
+        .w50 {
+            width: 49% !important;
+            display: inline-block !important;
+        }
+
+        .w60 {
+            width: 59% !important;
+            display: inline-block !important;
+        }
+
+        .flex {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <section>
+                <h2>Emulating a Sega Master System<br>in Javascript</h2>
+                <img src="images/MasterSystem.png">
+                <h5>Matt Godbolt<br><a href="https://twitter.com/mattgodbolt">@mattgodbolt</a></h5>
+                <div>
+                    Use cursor keys or space to navigate.
+                </div>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h3>What's a SMS?</h3>
+                <div class="flex">
+                    <div>
+                        <img src="images/MasterSystem.png">
+                        <br>
+                        <img src="images/Cartridge.png">
+                    </div>
+                    <div>
+                        <ul>
+                            <li>1985 (JP); 1986 (US);1987 (EU)</li>
+                            <li>8-bit Z80</li>
+                            <li>8KB RAM</li>
+                            <li>Custom VDP
+                                <ul>
+                                    <li>16KB RAM</li>
+                                    <li>256 x 192, 64-colour</li>
+                                </ul>
+                            </li>
+                            <li>SN76489 Sound Chip</li>
+                            <li>32, 64, 128, 256KB ROMs</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <h3>Why the Master System?</h3>
+            </section>
+            <section>
+                <h3>Backstory</h3>
+                <div class="r-stack">
+                    <img width=900 class="fade-out" src="images/AlteredBeastArcade.png">
+                    <img width=900 class="fragment" src="images/AlteredBeastSMS.png">
+                </div>
+            </section>
+            <section>
+                <h3>1995</h3>
+                <img src="images/OGMiracle.png" class="r-stretch">
+            </section>
+            <section>
+                <h3>Why Javascript?</h3>
+                <h5>2011</h5>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h3>Emulating a computer</h3>
+                <ul class="fragment">
+                    <li>Emulate the CPU</li>
+                    <li>Emulate the video</li>
+                    <li>Emulate the sound</li>
+                    <li>...</li>
+                    <li>Profit?</li>
+                </ul>
+            </section>
+            <section>
+                <h3>Emulating a Z80</h3>
+                <div class="flex">
+                    <img src="images/MyZ80.jpg" width="600px">
+                    <ul>
+                        <li>CISC chip - 900+ instruction</li>
+                        <li>IO bus</li>
+                        <li>3.53MHz
+                            <ul>
+                                <li>4 cycles (1µs) minimum</li>
+                                <li>7 cycles load or add</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h3>Emulating a Z80</h3>
+                <ul>
+                    <li>18 8-bit registers
+                        <ul>
+                            <li>A, B, C, D, E, H, L</li>
+                            <li>A', B', C', D', E', H', L'</li>
+                            <li>Flags, IRQs, RAM refresh</li>
+                            <li>Pairable: AF, BC, DE, HL</li>
+                        </ul>
+                    </li>
+                    <li>4 16-bit registers
+                        <ul>
+                            <li>IX, IY</li>
+                            <li>SP, PC</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+            <section>
+                <h3>Z80 - Example</h3>
+                <pre><code data-trim class="lang-avrasm">
+21 2a 06       LD HL,0x062a  ; HL = 0x062a
+87             ADD A,A       ; A = 2*A
+5f             LD E,A
+16 00          LD D,0x00     ; DE = (u16)A
+19             ADD HL,DE     ; HL = HL + DE
+7e             LD A,(HL)     ; A = *(u8*)HL;
+23             INC HL        ; HL++
+66             LD H,(HL)     ; A = *(u8*)HL;
+6f             LD L,A        ; L = A
+e9             JP HL         ; jump to HL
+                </code></pre>
+            </section>
+            <section>
+                <h3>Z80 - Decoding</h3>
+                <ul>
+                    <li>Optional prefix byte (<code>cb</code>, <code>dd</code>, <code>ed</code> or <code>fd</code>)
+                    </li>
+                    <li>One byte opcode</li>
+                    <li>0, 1 or 2 operand bytes</li>
+                </ul>
+                <pre><code data-trim class="lang-avrasm">
+af             XOR A, A
+3e ff          LD A, 0xff
+
+46             LD B, (HL)
+dd 46 0f       LD B, (IX + 0x0f)
+
+5b             LD E, E
+ed 5b 19 d0    LD DE, (0xd019)
+                </code></pre>
+            </section>
+            <section>
+                <h3>Z80 - Executing</h3>
+                <pre><code data-trim data-line-numbers="|1|3|4-6|8-10|12-14|16-20">
+const opcode = readbyte(z80.pc++);
+
+switch (opcode) {
+  case 0xaf: // XOR A, A
+    z80.a ^= z80.a;
+    break;
+
+  case 0x3e: // LD A, constant
+    z80.a = readbyte(z80.pc++);
+    break;
+
+  case 0x46: // LD B, (HL)
+    z80.b = readbyte((z80.h<<8) | z80.l);
+    break;
+
+  // and so on for all the other instructions
+
+  case 0xdd:
+    return handle_prefix_dd();
+  // ... etc
+                </code></pre>
+                <div class="fragment">… but there's more</div>
+            </section>
+            <section>
+                <h3>Z80 - Executing</h3>
+                <div class="flex">
+                    <img src="images/z80-die.png" alt="z80 die" height="500">
+                    <ul>
+                        <li>Flags:
+                            <ul>
+                                <li>carry, half-carry</li>
+                                <li>zero, sign</li>
+                                <li>overflow, parity</li>
+                            </ul>
+                        </li>
+                        <li>IRQs</li>
+                        <li>Input/output</li>
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h3>Z80 - Executing</h3>
+                <img class="r-stretch" src="images/Speccy.png">
+            </section>
+            <section>
+                <h3>Z80 - JSSpeccy</h3>
+                <ul>
+                    <li>Perl -> C</li>
+                    <li>C -> Javascript</li>
+                    <li>Avoids very repetitive code:
+                        <ul>
+                            <li>938 instructions</li>
+                            <li>1242 lines of perl</li>
+                            <li>5400+ lines of Javascript</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+            <section>
+                <h3>ADD A, imm</h3>
+                <pre><code class="lang-javascript" data-trim data-line-numbers="|4-5|7-11|13-14">
+const sz53_table[256], hc_add_table[8], oflo_add_table[8] = // ... computed once
+
+function add_a_imm() {
+  const c = readbyte(z80.pc++);
+  const result = z80.a + c;
+
+  const lookup = ((z80.a & 0x88) >> 3) | ((c & 0x88) >> 2) | ((result & 0x88) >> 1);
+  z80.f = (result & 0x100 ? C_FLAG : 0) // Carry
+        | hc_add_table[lookup & 0x07]   // 1/2 carry
+        | oflo_add_table[lookup >> 4]   // overflow
+        | sz53_table[z80.a];            // sign, zero, “undef” bits
+
+  z80.a = result & 0xff;
+  clock += 7;
+}
+                </code></pre>
+            </section>
+            <section>
+                <h3>Memory Map</h3>
+                <div class="flex">
+                    <div>
+                        <table class="memory">
+                            <tbody>
+                            <tr class="tiny top fragment highlight-current-cell" data-fragment-index="5">
+                                <td><code>fffc-ffff</code></td>
+                                <td class="magic">Paging registers</td>
+                            </tr>
+                            <tr class="kb8 mid fragment highlight-current-cell" data-fragment-index="4">
+                                <td><code>e000-fffb</code></td>
+                                <td class="ram">Mirror of 8KB RAM</td>
+                            </tr>
+                            <tr class="kb8 bot fragment highlight-current-cell" data-fragment-index="4">
+                                <td><code>c000-dfff</code></td>
+                                <td class="ram">8KB RAM</td>
+                            </tr>
+                            <tr class="kb16 all fragment highlight-current-cell" data-fragment-index="3">
+                                <td><code>8000-bfff</code></td>
+                                <td class="rom">16KB ROM page 2<br>(or Cartridge RAM)</td>
+                            </tr>
+                            <tr class="kb16 all fragment highlight-current-cell" data-fragment-index="2">
+                                <td><code>4000-7fff</code></td>
+                                <td class="rom">16KB ROM page 1</td>
+                            </tr>
+                            <tr class="kb16 top fragment highlight-current-cell" data-fragment-index="1">
+                                <td><code>0400-3fff</code></td>
+                                <td class="rom">15KB ROM page 0</td>
+                            </tr>
+                            <tr class="tiny bot fragment highlight-current-cell" data-fragment-index="1">
+                                <td><code>0000-03ff</code></td>
+                                <td class="rom">1KB ROM bank 0</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <table class="fragment registers">
+                            <tr>
+                                <th><code>ffff</code></th>
+                                <td>Page 2 ROM</td>
+                            </tr>
+                            <tr>
+                                <th><code>fffe</code></th>
+                                <td>Page 1 ROM</td>
+                            </tr>
+                            <tr>
+                                <th><code>fffd</code></th>
+                                <td>Page 0 ROM</td>
+                            </tr>
+                            <tr>
+                                <th><code>fffc</code></th>
+                                <td>ROM/RAM select</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            <section>Emulating Memory
+                <pre><code data-trim class="lang-javascript" data-line-numbers="|1-3|5|6|7-11|13-14">
+const romBanks = [new Uint8Array(16384), ...];  // 16KB blocks from ROM files
+const pages = [0, 1, 2];                        // Paging registers
+const ram = new Uint8Array(8192);               // 8KB of on-board RAM
+
+function readByte(address) {
+  const offset = address & 0x3fff;              // offset withing a 16KB page
+  if (address < 0xc000) {                       // It's ROM: which page?
+    const page = (address < 0x400) ? 0
+                                   : pages[address >>> 14];
+    return romBanks[page][offset];
+  }
+
+  // RAM, but only 8K's worth.
+  return ram[offset & 0x1fff]);
+}
+            </code></pre>
+            </section>
+            <section>Emulating Memory
+                <pre><code data-trim class="lang-javascript" data-line-numbers="">
+function writeByte(address, byte) {
+  if (address < 0xc000)
+    return; // It's ROM!
+
+  if (address === 0xfffc)
+    /*handle rom/ram*/;
+  else if (address >= 0xfffd)
+    pages[address - 0xfffd] = byte;
+  else ram[address & 0x1fff] = byte;
+}
+            </code></pre>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h3>VDP</h3>
+                <img class="r-stretch" src="images/FantasyZone.png">
+            </section>
+            <section>
+                <h3>VDP</h3>
+                <ul>
+                    <li>16KB RAM</li>
+                    <li>8 x 8 4bpp "tiles"</li>
+                    <li>2 16-entry palettes, 6-bit colour</li>
+                    <li>Background table</li>
+                    <li>Sprite table</li>
+                    <li>IRQ generator</li>
+                </ul>
+            </section>
+            <section>
+                <h3>Tiles</h3>
+                <img class="r-stretch" src="images/WonderBoy3Tiles.png">
+            </section>
+            <section>
+                <h3>Background</h3>
+                <ul>
+                    <li>32 x 24 map of tiles</li>
+                    <li>Two bytes/tile:
+                        <ul>
+                            <li>Tile index (9 bits)</li>
+                            <li>Horizontal, vertical flip (2 bits)</li>
+                            <li>Palette select (1 bit)</li>
+                            <li>Sprite overwrite (1 bit)</li>
+                            <li>3 "user" bits</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+            <section>
+                <h3>Background</h3>
+                <img class=r-stretch src="images/WonderBoy3Background.png">
+            </section>
+            <section>
+                <h3>Background</h3>
+                <div>
+                    <pre class="tile-map"><code data-noescape data-trim="">
+                    20<span class="fragment highlight-current-red" data-fragment-index="1">0212</span>202020202020202020202020202020<span
+                            class="fragment highlight-current-red" data-fragment-index="2">0616</span>20202020<span
+                            class="fragment highlight-current-red" data-fragment-index="4">474f4c44</span>20202020
+                    20<span class="fragment highlight-current-red" data-fragment-index="1">0313</span>202020202020202020202020202020<span
+                            class="fragment highlight-current-red" data-fragment-index="2">0717</span><span
+                            class="fragment highlight-current-red"
+                            data-fragment-index="3">3031</span>2020202020202020<span
+                            class="fragment highlight-current-red" data-fragment-index="5">34</span>20
+                    000000000000000000000000<span class="fragment highlight-current-red" data-fragment-index="6">6a7a82928494</span>0000000000000000000000000000
+                    000000000000000000000000<span class="fragment highlight-current-red" data-fragment-index="6">6b7b83938595</span>0000000000000000000000000000
+                    0000<span class="fragment highlight-current-red" data-fragment-index="6">6a7a82928494</span>000000000000000000000000000000000000000000000000
+                    0000<span class="fragment highlight-current-red" data-fragment-index="6">6b7b83938595</span>000000000000000000000000000000000000000000000000
+                    </code></pre>
+                </div>
+                <div class="r-stack">
+                    <img data-fragment-index="0" class="r-stretch fade-out" src="images/WonderBoy3Background.png">
+                    <img data-fragment-index="1" class="r-stretch fragment current-visible"
+                         src="images/WonderBoy3Background_heart.png">
+                    <img data-fragment-index="2" class="r-stretch fragment current-visible"
+                         src="images/WonderBoy3Background_potion.png">
+                    <img data-fragment-index="3" class="r-stretch fragment current-visible"
+                         src="images/WonderBoy3Background_num.png">
+                    <img data-fragment-index="4" class="r-stretch fragment current-visible"
+                         src="images/WonderBoy3Background_gold.png">
+                    <img data-fragment-index="5" class="r-stretch fragment current-visible"
+                         src="images/WonderBoy3Background_goldnum.png">
+                    <img data-fragment-index="6" class="r-stretch fragment current-visible"
+                         src="images/WonderBoy3Background_clouds.png">
+                </div>
+            </section>
+            <section>
+                <h3>Sprites</h3>
+                <div class="flex">
+                    <img src="images/WonderBoySprite.png">
+                    <ul>
+                        <li>64 sprites</li>
+                        <li>Global choice of 8 x 8 or 8 x 16</li>
+                        <li>256 byte table
+                            <ul>
+                                <li>x (8 bits)</li>
+                                <li>y (8 bits)</li>
+                                <li>tile index (8 bits)</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h3>Sprites</h3>
+                <img class="r-stretch" src="images/WonderBoy3WithSprites.png">
+            </section>
+            <section>
+                <h3>Sprites</h3>
+                <div class="flex">
+                    <div>
+                        <table class="sprites">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>x</th>
+                                <th>y</th>
+                                <th>t</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="fragment highlight-current-red" data-fragment-index="1">
+                                <td>0</td>
+                                <td>116</td>
+                                <td>111</td>
+                                <td>16</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="1">
+                                <td>1</td>
+                                <td>116</td>
+                                <td>127</td>
+                                <td>18</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="1">
+                                <td>2</td>
+                                <td>124</td>
+                                <td>111</td>
+                                <td>20</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="1">
+                                <td>3</td>
+                                <td>124</td>
+                                <td>127</td>
+                                <td>22</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="1">
+                                <td>4</td>
+                                <td>132</td>
+                                <td>111</td>
+                                <td>24</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="1">
+                                <td>5</td>
+                                <td>132</td>
+                                <td>127</td>
+                                <td>26</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="2">
+                                <td>6</td>
+                                <td>211</td>
+                                <td>111</td>
+                                <td>102</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="2">
+                                <td>7</td>
+                                <td>211</td>
+                                <td>127</td>
+                                <td>104</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="2">
+                                <td>8</td>
+                                <td>219</td>
+                                <td>111</td>
+                                <td>106</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="2">
+                                <td>9</td>
+                                <td>219</td>
+                                <td>127</td>
+                                <td>108</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <table class="sprites">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>x</th>
+                                <th>y</th>
+                                <th>t</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="fragment highlight-current-red" data-fragment-index="3">
+                                <td>10</td>
+                                <td>147</td>
+                                <td>35</td>
+                                <td>44</td>
+                            </tr>
+                            <tr class="fragment highlight-current-red" data-fragment-index="3">
+                                <td>11</td>
+                                <td>155</td>
+                                <td>35</td>
+                                <td>46</td>
+                            </tr>
+                            <tr>
+                                <td class="fragment highlight-current-red" data-fragment-index="4">12</td>
+                                <td>155</td>
+                                <td class="fragment highlight-current-red" data-fragment-index="4">208</td>
+                                <td>142</td>
+                            </tr>
+                            <tr>
+                                <td>13</td>
+                                <td>155</td>
+                                <td>127</td>
+                                <td>144</td>
+                            </tr>
+                            <tr>
+                                <td>14</td>
+                                <td>219</td>
+                                <td>208</td>
+                                <td>116</td>
+                            </tr>
+                            <tr>
+                                <td>15</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>16</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">...</td>
+                            </tr>
+                            <tr>
+                                <td>62</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>63</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="w40">
+                        <div class="r-stack">
+                            <img data-fragment-index="0" class="r-stretch fade-out"
+                                 src="images/WonderBoy3WithSprites.png">
+                            <img data-fragment-index="1" class="r-stretch fragment current-visible"
+                                 src="images/WonderBoy3WithSprites_wb.png">
+                            <img data-fragment-index="2" class="r-stretch fragment current-visible"
+                                 src="images/WonderBoy3WithSprites_snek.png">
+                            <img data-fragment-index="3" class="r-stretch fragment current-visible"
+                                 src="images/WonderBoy3WithSprites_coin.png">
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <h3>Sprites</h3>
+                <div class="flex">
+                    <div>
+                        <ul>
+                            <li>For each line:
+                                <ul>
+                                    <li>Scan sprite table</li>
+                                    <li>Look for vertical span overlaps</li>
+                                    <li>Limit of 8</li>
+                                </ul>
+                            </li>
+                            <li>For each pixel:
+                                <ul>
+                                    <li>Scan 8-sprite list</li>
+                                    <li>Look for first opaque match</li>
+                                    <li>Else use background</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <img src="images/AlteredBeastSMS_hl.png" class="r-stretch">
+                </div>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h3>Sound</h3>
+                <img src="images/SN76489_08_block_diagram.png" class="r-stretch">
+            </section>
+            <section>
+                <h3>Sound</h3>
+                <ul>
+                    <li>4 channels:
+                        <ul>
+                            <li>3 square wave</li>
+                            <li>1 noise</li>
+                        </ul>
+                    </li>
+                    <li>One Z80 IO bus register:
+                        <pre><code data-trim>
+                                1rr1dddd  ; volume
+                                1rr0hhhh  ; freq (high)
+                                0-llllll  ; freq (low)
+                        </code></pre>
+                    </li>
+                </ul>
+            </section>
+            <section>
+                <h3>Sound - Tone</h3>
+                <pre><code data-trim class="javascript" data-line-numbers="">
+for (var i = 0; i < length; ++i) {
+  counter[chan] -= soundchipFreq / sampleRate;
+  if (counter[chan] < 0) {
+    counter[chan] += reg[chan];
+    out[chan] ^= 1;
+  }
+  result[i] += out[chan] ? 1 : -1 * vol[chan];
+}
+                </code></pre>
+            </section>
+            <section>
+                <h3>Sound - Noise</h3>
+                <pre><code data-trim class="javascript" data-line-numbers="">
+let lfsr = 1 &lt;&lt; 15;
+
+function shiftLfsrWhiteNoise() {
+  const bit = (lfsr &amp; 1) ^ ((lfsr &amp; (1&lt;&lt;3)) >> 3);
+  lfsr = (lfsr >> 1) | (bit &lt;&lt; 15);
+  return lfsr & 1;
+}
+                </code></pre>
+            </section>
+
+        </section>
+        <section>
+            <section>
+                <h3>Putting it all together</h3>
+                <a href="https://xania.org/miracle/miracle.html"><img class="r-stretch" src="images/TeddyBoy.png"></a>
+            </section>
+            <section>
+                <h3>Conclusion</h3>
+                <ul>
+                    <li>Time away from family can be constructive</li>
+                    <li>Reliving your childhood is fun</li>
+                    <li>Browsers are amazingly fast</li>
+                </ul>
+                <img src="images/Sonic.png">
+            </section>
+            <section>
+                <h3>More things</h3>
+                <ul>
+                    <li><a href="https://github.com/mattgodbolt/Miracle">github.com/mattgodbolt/Miracle</a></li>
+                    <li>
+                        Led to <a href="https://bbc.godbolt.org/">jsbeeb</a>, and <a href="https://bbcmic.ro">Owlet</a>
+                    </li>
+                    <li>Go buy LizardCube's Wonderboy III remake: <a href="https://www.thedragonstrap.com/">thedragonstrap.com</a>
+                    </li>
+                </ul>
+            </section>
+        </section>
+    </div>
+    <div class="footer copy">
+        &copy; <a href="https://twitter.com/mattgodbolt">Matt Godbolt</a> 2020
+    </div>
+</div>
+
+<script src="reveal.js/dist/reveal.js"></script>
+<script src="reveal.js/plugin/notes/notes.js"></script>
+<script src="reveal.js/plugin/markdown/markdown.js"></script>
+<script src="reveal.js/plugin/highlight/highlight.js"></script>
+<!--<script src="z80.js"></script>-->
+<script>
+    const ratio = 16 / 9;
+    const width = 1500;
+
+    Reveal.initialize({
+        hash: true,
+        slideNumber: true,
+        transition: 'fade',
+        width: width,
+        height: width / ratio,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+    });
+</script>
+</body>
+</html>
